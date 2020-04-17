@@ -1,0 +1,52 @@
+# docker-compose -f docker-compose_s2cells-airspace.yaml -p s2cells-airspace_sandbox up
+
+version: '3.7'
+
+services:
+
+  s2cells-airspace-crdb-for-debugging:
+    container_name: s2cells-airspace-crdb
+    hostname: s2cells-airspace-crdb
+    image: cockroachdb/cockroach:v19.1.2
+    command: start --insecure
+    expose:
+      - 26257
+    restart: always
+
+  s2cells-airspace-backend-for-debugging:
+    container_name: s2cells-airspace-backend
+    hostname: s2cells-airspace-backend
+    build:
+      context: ../..
+      dockerfile: Dockerfile_golang
+      args:
+        CRDB_HOST: s2cells-airspace-crdb-for-debugging
+    depends_on:
+      - s2cells-airspace-crdb-for-debugging
+
+  s2cells-airspace-frontend-for-debugging:
+    container_name: s2cells-airspace-frontend
+    hostname: s2cells-airspace-frontend
+    build:
+      context: ../..
+      dockerfile: Dockerfile_react
+    depends_on:
+      - s2cells-airspace-backend-for-debugging
+
+  s2cells-airspace-gw-for-debugging:
+    container_name: s2cells-airspace-gw
+    hostname: s2cells-airspace-gw
+    image: nginx:alpine
+    volumes:
+      - ../../nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 8080:80
+    depends_on:
+      - s2cells-airspace-backend-for-debugging
+      - s2cells-airspace-frontend-for-debugging
+
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: 192.168.3.0/24

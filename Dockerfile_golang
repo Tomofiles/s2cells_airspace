@@ -1,0 +1,26 @@
+ARG GO_TAG=1.13-alpine
+ARG APP_HOME=/app
+ARG CRDB_HOST=localhost
+
+FROM golang:${GO_TAG}
+ARG GO_TAG
+ARG APP_HOME
+ARG CRDB_HOST
+
+RUN mkdir ${APP_HOME}
+WORKDIR ${APP_HOME}
+COPY go.mod .
+COPY go.sum .
+
+RUN go mod download
+
+COPY cmd cmd
+COPY pkg pkg
+
+RUN go install ./...
+
+EXPOSE 8081
+
+ENV CRDB_HOST=${CRDB_HOST}
+
+CMD [ "sh", "-c", "/go/bin/s2airp-backend -cockroach_host ${CRDB_HOST}" ]
