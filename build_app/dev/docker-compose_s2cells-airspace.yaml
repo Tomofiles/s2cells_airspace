@@ -7,11 +7,9 @@ services:
   s2cells-airspace-crdb-for-debugging:
     container_name: s2cells-airspace-crdb
     hostname: s2cells-airspace-crdb
-    image: cockroachdb/cockroach:v19.1.2
-    command: start --insecure
-    expose:
-      - 26257
-    restart: always
+    build:
+      context: ../..
+      dockerfile: Dockerfile_crdb
 
   s2cells-airspace-backend-for-debugging:
     container_name: s2cells-airspace-backend
