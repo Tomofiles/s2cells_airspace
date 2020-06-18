@@ -21,8 +21,6 @@ Overview
 ## Demo
 ![](https://user-images.githubusercontent.com/27773127/84903803-83017200-b0e9-11ea-9f01-622d5601b47e.gif)
 
-## Usage
-
 ## Install
 
 ### 1. 以下のコマンドを実行して、アプリケーションを起動します。
